@@ -104,11 +104,8 @@ The repository includes a Postman collection that covers these 11 scenarios:
 10. Usage summary admin token
 11. Verify query log created in PG Admin
 
-## Screenshots From The DOCX
-
-The screenshots in [`Teamboard-postman-ss.docx`](Teamboard-postman-ss.docx) were extracted into `docs/images/` so they can be embedded directly in this README.
-
-If you replace these with your own images, keep the same folder and update the file names if needed.
+## Screenshots From The Postman
+This is how different api endpoints respond to given json input. 
 
 ### 1. Register a new company
 
@@ -153,19 +150,3 @@ If you replace these with your own images, keep the same folder and update the f
 ### 11. Verify query log created in PG Admin
 
 ![Verify query log created in PG Admin](docs/images/11-query-log-pgadmin.png)
-
-## Notes On Using Local Images
-
-Markdown images only render when the files are inside the repository or available through a remote URL.
-
-If your screenshots are currently only on your machine, copy them into `docs/images/` and reference them like this:
-
-```md
-![Scenario title](docs/images/your-image-name.png)
-```
-
-For a fixed display size, you can also use HTML:
-
-```html
-<img src="docs/images/your-image-name.png" alt="Scenario title" width="900" />
-```
