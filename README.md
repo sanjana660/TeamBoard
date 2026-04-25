@@ -22,7 +22,6 @@ This starts a PostgreSQL container using the values in `docker-compose.yml`:
 
 - Database: `teamboard_db`
 - User: `teamboard_user`
-- Password: `teamboard_pass`
 - Port: `5433`
 
 ### Option 2: Use an existing PostgreSQL server
