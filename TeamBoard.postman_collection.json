@@ -1,0 +1,412 @@
+{
+  "info": {
+    "_postman_id": "503bea3d-4dbc-4453-ac55-ce5bebb68390",
+    "name": "TeamBoard",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53385407",
+    "_collection_link": "https://go.postman.co/collection/53385407-503bea3d-4dbc-4453-ac55-ce5bebb68390?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Api enpoints",
+      "item": [
+        {
+          "name": "Register New Company",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"Digiworld\",\r\n  \"password\": \"securepass123\",\r\n  \"company_name\": \"Digi World\",\r\n  \"email\": \"dev@digiworld.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/register/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "auth",
+                "register",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Duplicate username",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"Digiworld\",\r\n  \"password\": \"securepass123second\",\r\n  \"company_name\": \"Digi World\",\r\n  \"email\": \"dev1@digiworld.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/register/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "auth",
+                "register",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login-valid details",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"Digiworld\",\r\n  \"password\": \"securepass123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/login/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "auth",
+                "login",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login-wrong password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"Digiworld\",\r\n  \"password\": \"wrong\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/login/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "auth",
+                "login",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Query KB - No token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"search\": \"select_related\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/kb/query/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "kb",
+                "query",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Query KB valid token, keyword with results",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc3MDYyNjk2LCJpYXQiOjE3NzcwNjIzOTYsImp0aSI6ImQ1MWRlM2YyYmU5ZjRkYjg4YjdkMjM4ZTVhYzgxZjVmIiwidXNlcl9pZCI6IjIifQ.pHcnD8OLiUCOLP88cKemBjj5SoggXWnNU00XP4MUP_Q",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"search\": \"select_related\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/kb/query/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "kb",
+                "query",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Query KB valid tokens, no matching results",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc3MDYzMTAyLCJpYXQiOjE3NzcwNjI4MDIsImp0aSI6IjgyMDIwYmM3MjJhZTQwNGM4MGU0Y2E3MGExMmI0MWQ4IiwidXNlcl9pZCI6IjIifQ.ZR3IWJ8ndHsdUWpoyt7bckLJKa4DGM_Aq2v3T53f2GQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"search\": \"zzzz_no_match_987654\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/kb/query/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "kb",
+                "query",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Query KB- Missing Search field",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc3MDYzMzIwLCJpYXQiOjE3NzcwNjMwMjAsImp0aSI6ImFhZTg1NjFmZmU1ZDQxN2FhYzc4NDM0ODkyMjIzMDkwIiwidXNlcl9pZCI6IjIifQ.mKOV_BkgbPEYH4I3wdctNDzRmKPDaTkvNogr-UAbync",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/kb/query/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "kb",
+                "query",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usage summary client token",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc3MDYzNTEyLCJpYXQiOjE3NzcwNjMyMTIsImp0aSI6IjJiMDAyODE1NTU4ODRiMWFiZmU5OTkzZTk0NzVjOWEwIiwidXNlcl9pZCI6IjIifQ.RHBfQdJ1mClTIMlCJ8O7LNfzHNONagdozL89KlByJ7E",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/admin/usage-summary/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "admin",
+                "usage-summary",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Usage summary admin token",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc3MDYzODkyLCJpYXQiOjE3NzcwNjM1OTIsImp0aSI6IjQ2OTE3OTNkYjIzNTQxNmZiNjlmOTQ5ZGEyNjkyMTkxIiwidXNlcl9pZCI6IjIifQ.DdsFM35AWoVd4nfy0VDK4tJ9e7q0-wjFR5N_syce2g0",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/admin/usage-summary/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "admin",
+                "usage-summary",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

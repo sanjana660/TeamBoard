@@ -1,0 +1,429 @@
+{
+  "info": {
+    "_postman_id": "8a0a8c47-5a2f-4d1e-9d8f-7e4e0eb6a7c1",
+    "name": "TeamBoard API Scenarios",
+    "description": "Postman collection covering the 11 core scenarios in the TeamBoard project: registration, login, knowledge base querying, and admin usage summary access control.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "key": "username",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": "securepass123"
+    },
+    {
+      "key": "company_name",
+      "value": "Acme Corp"
+    },
+    {
+      "key": "email",
+      "value": ""
+    },
+    {
+      "key": "search_term",
+      "value": "select_related"
+    },
+    {
+      "key": "empty_search",
+      "value": ""
+    },
+    {
+      "key": "missing_search_term",
+      "value": "__no_such_kb_term__"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "admin_access_token",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get('username')) {",
+          "  const suffix = Date.now();",
+          "  pm.collectionVariables.set('username', `acmecorp_${suffix}`);",
+          "  pm.collectionVariables.set('email', `dev+${suffix}@acmecorp.com`);",
+          "}",
+          "if (!pm.collectionVariables.get('password')) {",
+          "  pm.collectionVariables.set('password', 'securepass123');",
+          "}",
+          "if (!pm.collectionVariables.get('company_name')) {",
+          "  pm.collectionVariables.set('company_name', 'Acme Corp');",
+          "}",
+          "if (!pm.collectionVariables.get('search_term')) {",
+          "  pm.collectionVariables.set('search_term', 'select_related');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "01 Register user and auto-create company",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\",\n  \"company_name\": \"{{company_name}}\",\n  \"email\": \"{{email}}\"\n}"
+            },
+            "url": "{{base_url}}/auth/register/",
+            "description": "Creates a user, triggers the Company auto-creation signal, and returns an access token plus API key."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status is 201', () => { pm.response.to.have.status(201); });",
+                  "pm.test('Response includes access token', () => { pm.expect(json.access).to.be.a('string').and.not.empty; });",
+                  "pm.test('Response includes api_key', () => { pm.expect(json.api_key).to.be.a('string').and.not.empty; });",
+                  "pm.test('Response includes company name', () => { pm.expect(json.company_name).to.eql(pm.collectionVariables.get('company_name')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 Register duplicate username returns validation error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\",\n  \"company_name\": \"{{company_name}}\",\n  \"email\": \"{{email}}\"\n}"
+            },
+            "url": "{{base_url}}/auth/register/",
+            "description": "Replays the same username to verify the serializer rejects duplicates."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status is 400', () => { pm.response.to.have.status(400); });",
+                  "pm.test('Username already exists message is returned', () => { pm.expect(JSON.stringify(json)).to.include('Username already exists.'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 Login with valid credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{base_url}}/auth/login/",
+            "description": "Authenticates the registered user and captures the JWT access token for later requests."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status is 200', () => { pm.response.to.have.status(200); });",
+                  "pm.test('Access token is returned', () => { pm.expect(json.access).to.be.a('string').and.not.empty; });",
+                  "pm.collectionVariables.set('access_token', json.access);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 Login with invalid password returns 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"wrong-password\"\n}"
+            },
+            "url": "{{base_url}}/auth/login/",
+            "description": "Confirms invalid credentials are rejected by the login endpoint."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status is 401', () => { pm.response.to.have.status(401); });",
+                  "pm.test('Error detail is returned', () => { pm.expect(json.detail).to.eql('Invalid username or password.'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Knowledge Base",
+      "item": [
+        {
+          "name": "05 Query with blank search returns 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"search\": \"{{empty_search}}\"\n}"
+            },
+            "url": "{{base_url}}/kb/query/",
+            "description": "Uses an authenticated request to validate the blank search guard clause before query logging happens."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status is 400', () => { pm.response.to.have.status(400); });",
+                  "pm.test('Blank search error is returned', () => { pm.expect(json.detail).to.eql('The search field is required and cannot be blank.'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 Query without token returns 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"search\": \"{{search_term}}\"\n}"
+            },
+            "url": "{{base_url}}/kb/query/",
+            "description": "Shows that the knowledge base endpoint is protected by the default authentication policy."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 Query with token returns results",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"search\": \"{{search_term}}\"\n}"
+            },
+            "url": "{{base_url}}/kb/query/",
+            "description": "Runs the knowledge base search using the JWT captured from login."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status is 200', () => { pm.response.to.have.status(200); });",
+                  "pm.test('Search term is echoed back', () => { pm.expect(json.search).to.eql(pm.collectionVariables.get('search_term')); });",
+                  "pm.test('Count is numeric', () => { pm.expect(json.count).to.be.a('number'); });",
+                  "pm.test('Results is an array', () => { pm.expect(json.results).to.be.an('array'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08 Query with no matching results returns 0 count",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"search\": \"{{missing_search_term}}\"\n}"
+            },
+            "url": "{{base_url}}/kb/query/",
+            "description": "Uses an unlikely term to verify the empty-result path and query logging behavior."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status is 200', () => { pm.response.to.have.status(200); });",
+                  "pm.test('Count is zero', () => { pm.expect(json.count).to.eql(0); });",
+                  "pm.test('Results is empty', () => { pm.expect(json.results).to.be.an('array').that.is.empty; });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "09 Admin usage summary without token returns 401",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/admin/usage-summary/",
+            "description": "Confirms the admin summary endpoint requires authentication."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 401', () => { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10 Admin usage summary with client token returns 403",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": "{{base_url}}/admin/usage-summary/",
+            "description": "Uses the regular client JWT to verify the custom IsAdminUser permission rejects non-admin users."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', () => { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11 Admin usage summary with admin token returns 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_access_token}}"
+              }
+            ],
+            "url": "{{base_url}}/admin/usage-summary/",
+            "description": "Requires an admin JWT issued for a user whose company role is set to admin. Populate admin_access_token before running this request."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Admin token is configured', () => { pm.expect(pm.collectionVariables.get('admin_access_token')).to.be.a('string').and.not.empty; });",
+                  "pm.test('Status is 200', () => { pm.response.to.have.status(200); });",
+                  "pm.test('Response includes total_queries', () => { pm.expect(json.total_queries).to.be.a('number'); });",
+                  "pm.test('Response includes active_companies', () => { pm.expect(json.active_companies).to.be.a('number'); });",
+                  "pm.test('Response includes top_search_terms', () => { pm.expect(json.top_search_terms).to.be.an('array'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
